@@ -1,0 +1,7 @@
+name: flashdrop_mobile
+description: A monorepo for FlashDrop Driver App.
+publish_to: "none"
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+

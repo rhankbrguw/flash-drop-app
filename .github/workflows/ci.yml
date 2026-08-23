@@ -1,0 +1,75 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  backend-ci:
+    name: Backend (Go Connect-RPC)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.x"
+          cache-dependency-path: server/go.sum
+
+      - name: Download Go Dependencies
+        run: go mod download
+
+      - name: Verify Go Code & Vet
+        run: go vet ./...
+
+      - name: Run Go Unit & Integration Tests
+        run: go test -v ./...
+
+      - name: Build API Binary
+        run: go build -v -o /dev/null ./cmd/api
+
+  frontend-ci:
+    name: Mobile (Flutter Driver App)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install API Client Dependencies
+        run: |
+          cd mobile/packages/api_client
+          flutter pub get
+
+      - name: Install Driver App Dependencies
+        run: |
+          cd mobile/apps/driver_app
+          flutter pub get
+
+      - name: Analyze Driver App Code
+        run: |
+          cd mobile/apps/driver_app
+          flutter analyze
+
+      - name: Run Driver App Widget Tests
+        run: |
+          cd mobile/apps/driver_app
+          flutter test

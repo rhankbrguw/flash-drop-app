@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package location.v1;
+
+option go_package = "flashdrop/server/internal/adapters/grpc/gen;locationv1";
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+  int64 timestamp = 3;
+}
+
+message StreamLocationRequest {
+  string driver_id = 1;
+  Location location = 2;
+}
+
+message StreamLocationResponse {
+  bool success = 1;
+}
+
+message WatchDriverRequest {
+  string driver_id = 1;
+}
+
+message WatchDriverResponse {
+  Location location = 1;
+}
+
+message GetLocationHistoryRequest {
+  string driver_id = 1;
+  int32 limit = 2; // Maximum number of breadcrumbs to retrieve
+}
+
+message GetLocationHistoryResponse {
+  repeated Location locations = 1;
+}
+
+service LocationService {
+  // Client-to-server stream for drivers to constantly update their location.
+  rpc StreamLocation(stream StreamLocationRequest) returns (StreamLocationResponse);
+
+  // Server-to-client stream for users to track a driver's location in real-time.
+  rpc WatchDriver(WatchDriverRequest) returns (stream WatchDriverResponse);
+
+  // Fetch the historical breadcrumb trail for a specific driver.
+  rpc GetLocationHistory(GetLocationHistoryRequest) returns (GetLocationHistoryResponse);
+}

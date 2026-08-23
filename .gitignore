@@ -1,0 +1,39 @@
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Common
+.env
+tmp/
+coverage/
+*.log
+
+# Go
+server/bin/
+server/tmp/
+server/main
+server/api
+/server/*.exe
+
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+**/.dart_tool/
+**/build/
+
+# Ignore pubspec.lock in apps, but generally keep them in standard environments
+# But based on user request "pubspec.lock for apps but not for packages":
+mobile/apps/*/pubspec.lock
+
+# macOS
+.DS_Store
+
+# Melos
+.melos_tool/
